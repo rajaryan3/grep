@@ -7,6 +7,9 @@ static int word=0;
 static int getlineno=0;
 static int word_type=0;
 
+
+// the function which helps to find that the given keyword is present or not and further implementation of other functions
+
 void findInFile(FILE* ptr , char* keyword ,char* path){
 	char ch;
 	long currentlength;
@@ -39,7 +42,7 @@ void findInFile(FILE* ptr , char* keyword ,char* path){
 				currentlength=ftell(ptr);
 				
 				fseek(ptr,0,SEEK_SET);
-				//printf("%d",word);//written fir trial
+				//printf("%d",word);//written for trial
 				if(word_type==0){
 					wordoccur++;
 
@@ -54,7 +57,7 @@ void findInFile(FILE* ptr , char* keyword ,char* path){
 					writeline(lineno,ptr);
 					}
 				fseek(ptr,currentlength+1,SEEK_SET);
-				//printf("word is ---%d---",word);
+				//printf("word is ---%d---",word);	
 				//ch=fgetc(ptr);
 				//printf("char is %c",ch);
 			}		
@@ -70,6 +73,8 @@ void findInFile(FILE* ptr , char* keyword ,char* path){
 			printf("%d\n" , wordoccur);
 	return ;	
 }
+
+//if the given keyword is found then checking it's type like *hello or hello* or *hello* or _hello_
 
 void chktypeofword(FILE* fptr, int wordlength ){
 	long currentlength=ftell(fptr);
@@ -97,6 +102,7 @@ void chktypeofword(FILE* fptr, int wordlength ){
 	return;
 }
 
+// to print line on terminal which satisfies keyword constraints
 void writeline(int lineno , FILE* ptr ){
 
 	if(getlineno==lineno)
@@ -123,6 +129,8 @@ void writeline(int lineno , FILE* ptr ){
 	return;
 }
 
+// the function helps to traverse through the all available directories and handle folder in folder logic
+
 int findinfolder(char* dir_path ,char* keyword ){
 	reqtypeofword(keyword);
 	DIR *d;FILE* fptr;
@@ -146,7 +154,7 @@ int findinfolder(char* dir_path ,char* keyword ){
 					strcat(reqfolder_path,"/");
 					findinfolder(reqfolder_path,keyword);
 				}
-				//printf("%s  ---%d\n",req_path,s);
+				//printf("%s  ---%d\n",req_path,s);  // to check it's working properly or not
 				fptr=fopen(req_path,"r");
 				findInFile(fptr,keyword,req_path);
 				fclose(fptr);
@@ -158,6 +166,16 @@ int findinfolder(char* dir_path ,char* keyword ){
 	}
 	return 0;
 }
+
+// checking how many different command we need to use while performing grep implementation
+
+/*
+
+	-n : return line no. in file
+	-i : consider keyword with case insensitivity
+	-c : return how many times the keyword occured in file
+	-w : string appears as distinct word in file
+*/
 
 int chkcommand(char* given_comm , char* keyword){
 	//reqtypeofword(keyword);
@@ -210,6 +228,15 @@ int chkcommand(char* given_comm , char* keyword){
 	return 1;
 }
 
+
+// to determine which type of string is required
+
+/*
+	word_type = 1 when keyword = "hello" ( all strings in which given keyword appears as word )   // handled in chkcommand()
+	word_type = 2 when keyword = "hello*" ( all strings starting with hello)
+	word_type = 3 when keyword = "*hello" ( all strings ending with hello )
+	word_type = 4 when keyword = "*hello*"( all strings having hello )
+*/
 void reqtypeofword(char* key){
 	int i=1,chk=0;
 	int len =strlen(key);
